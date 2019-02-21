@@ -11,12 +11,40 @@ class MoviesController < ApplicationController
   end
 
   def index
+#    if params[:sorted_by]==nil
+#      @movies = Movie.all
+#    else
+#      @movies = Movie.order(params[:sorted_by])
+#      @selected_col = params[:sorted_by]
+#    end
+
     if params[:sorted_by]==nil
-      @movies = Movie.all
+      if params[:ratings]
+        @movies = Movie.where({rating: params[:ratings].keys})
+      else
+        @movies = Movie.all
+      end 
     else
-      @movies = Movie.order(params[:sorted_by])
-      @selected_col = params[:sorted_by]
+      if params[:ratings]
+        @movies = Movie.where({rating: params[:ratings].keys}).order(params[:sorted_by])
+        @selected_col = params[:sorted_by]
+      else
+        @movies = Movie.order(params[:sorted_by])
+        @selected_col = params[:sorted_by]
+      end
     end
+    @all_ratings = Movie.returnRatings
+    
+    
+    @checked_ratingboxes = params[:ratings]
+    if @checked_ratingboxes
+      @flag=false   #check whether this is the first load of page. Hash for rating_boxes=NULL
+    else
+      @flag=true    #create a new Hash for rating boxes
+      @checked_ratingboxes = Hash.new 
+    end
+      
+      
   end
 
   def new
